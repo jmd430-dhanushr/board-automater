@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Board Automater — JMAN</title>
+<link rel="icon" type="image/png" href="/static/favicon_logo.png">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div class="shell">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-inner">
+        <img src="/static/jman_logo.svg" alt="JMAN" class="jman-logo-img">
+        <div class="sidebar-product-name">
+          <span class="product-serif">Board</span><span class="product-mono">Automater</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-group-label">Setup</div>
+
+      <button class="nav-link active" id="nav-connection" onclick="openSection('connection')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 3H4a2 2 0 000 4h2M10 3h2a2 2 0 010 4h-2M5 5h6"/>
+        </svg>
+        Connection
+      </button>
+
+      <button class="nav-link" id="nav-mapping" onclick="openSection('mapping')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 4h7M12 4h2M12 4l-2-2m2 2l-2 2M14 12H7M4 12H2M4 12l2-2m-2 2l2 2"/>
+        </svg>
+        Status Mapping
+      </button>
+
+      <button class="nav-link" id="nav-priority" onclick="openSection('priority')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M3 4h10M3 8h7M3 12h4"/>
+        </svg>
+        Priority Mapping
+      </button>
+
+      <button class="nav-link" id="nav-assignee" onclick="openSection('assignee')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <circle cx="8" cy="5.5" r="2.5"/>
+          <path d="M2.5 14.5c0-2.761 2.462-4 5.5-4s5.5 1.239 5.5 4"/>
+        </svg>
+        Assignee Overrides
+      </button>
+
+      <div class="nav-divider"></div>
+      <div class="nav-group-label">Actions</div>
+
+      <button class="nav-link" id="nav-sync" onclick="openSection('sync')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13.5 7A6 6 0 0 0 3 4.5M2.5 2.5v3h3"/>
+          <path d="M2.5 9a6 6 0 0 0 10.5 2.5M13.5 13.5v-3h-3"/>
+        </svg>
+        Run Sync
+      </button>
+    </nav>
+
+  </aside>
+
+  <!-- ── Main column ── -->
+  <div class="main-col">
+
+    <header class="topbar">
+      <span class="topbar-title">Jira → Azure DevOps Sync</span>
+    </header>
+
+    <div class="scroll-area">
+
+      <!-- 1. Connection -->
+      <div class="accord open" id="section-connection">
+        <button class="accord-hd" onclick="toggleSection('connection')">
+          <div class="accord-step">1</div>
+          <div class="accord-info">
+            <div class="accord-title">Connection</div>
+            <div class="accord-sub">Jira and Azure DevOps credentials</div>
+          </div>
+          <svg class="accord-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 6l4 4 4-4"/>
+          </svg>
+        </button>
+        <div class="accord-body">
+          <div class="accord-inner">
+            <div class="accord-content">
+              <div class="grid-2">
+                <div class="form-group">
+                  <div class="field-group-label">Jira</div>
+                  <div class="field">
+                    <label class="field-label">Base URL</label>
+                    <input class="field-input" type="url" id="jira_base_url" placeholder="https://your-domain.atlassian.net">
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Email</label>
+                    <input class="field-input" type="email" id="jira_email" placeholder="you@company.com">
+                  </div>
+                  <div class="field">
+                    <label class="field-label">API Token <span><a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">generate →</a></span></label>
+                    <input class="field-input" type="password" id="jira_api_token" placeholder="Atlassian API token" autocomplete="new-password">
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Project Key</label>
+                    <input class="field-input" type="text" id="jira_project_key" placeholder="PROJ">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="field-group-label">Azure DevOps</div>
+                  <div class="field">
+                    <label class="field-label">Organisation</label>
+                    <input class="field-input" type="text" id="azure_org" placeholder="your-organisation">
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Project</label>
+                    <input class="field-input" type="text" id="azure_project" placeholder="your-project">
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Team</label>
+                    <input class="field-input" type="text" id="azure_team" placeholder="Your Team">
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Personal Access Token <span>Work Items: Read &amp; Write</span></label>
+                    <input class="field-input" type="password" id="azure_pat" placeholder="Azure DevOps PAT" autocomplete="new-password">
+                  </div>
+                </div>
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-primary" onclick="testConnection()">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 2a6 6 0 1 0 6 6"/><path d="M11 2l3 3-3 3"/>
+                  </svg>
+                  Test Connection
+                </button>
+                <button class="btn btn-secondary" onclick="saveConfig()">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 14V5.5L5.5 3H13v11H3z"/><path d="M6 14v-4h4v4"/><path d="M6 3v3h5"/>
+                  </svg>
+                  Save
+                </button>
+                <button class="btn btn-ghost btn-sm" onclick="resetCreds()">Reset</button>
+              </div>
+              <div id="conn-result" class="result hidden"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Status Mapping -->
+      <div class="accord" id="section-mapping">
+        <button class="accord-hd" onclick="toggleSection('mapping')">
+          <div class="accord-step">2</div>
+          <div class="accord-info">
+            <div class="accord-title">Status Mapping</div>
+            <div class="accord-sub">Jira status → Azure DevOps state · first match wins, top to bottom</div>
+          </div>
+          <svg class="accord-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 6l4 4 4-4"/>
+          </svg>
+        </button>
+        <div class="accord-body">
+          <div class="accord-inner">
+            <div class="accord-content">
+              <div class="rules-group">
+                <div class="rules-group-label">Story Rules</div>
+                <div class="rule-table-header">
+                  <span>Match keywords (comma-sep)</span>
+                  <span></span>
+                  <span>Azure target states (comma-sep)</span>
+                  <span>Assignee filter</span>
+                  <span></span>
+                </div>
+                <div id="story-rules-container"></div>
+                <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="addStatusRule('story')">+ Add rule</button>
+              </div>
+              <div class="rules-group" style="margin-top:24px">
+                <div class="rules-group-label">Task Rules</div>
+                <div class="rule-table-header">
+                  <span>Match keywords (comma-sep)</span>
+                  <span></span>
+                  <span>Azure target states (comma-sep)</span>
+                  <span>Assignee filter</span>
+                  <span></span>
+                </div>
+                <div id="task-rules-container"></div>
+                <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="addStatusRule('task')">+ Add rule</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Priority Mapping -->
+      <div class="accord" id="section-priority">
+        <button class="accord-hd" onclick="toggleSection('priority')">
+          <div class="accord-step">3</div>
+          <div class="accord-info">
+            <div class="accord-title">Priority Mapping</div>
+            <div class="accord-sub">Jira priority → Azure numeric value and label</div>
+          </div>
+          <svg class="accord-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 6l4 4 4-4"/>
+          </svg>
+        </button>
+        <div class="accord-body">
+          <div class="accord-inner">
+            <div class="accord-content">
+              <table class="map-table">
+                <thead><tr><th>Jira Priority</th><th>Azure Numeric</th><th>Custom Label</th><th></th></tr></thead>
+                <tbody id="priority-tbody"></tbody>
+              </table>
+              <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="addPriorityRow()">+ Add row</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Assignee Overrides -->
+      <div class="accord" id="section-assignee">
+        <button class="accord-hd" onclick="toggleSection('assignee')">
+          <div class="accord-step">4</div>
+          <div class="accord-info">
+            <div class="accord-title">Assignee Overrides</div>
+            <div class="accord-sub">Map Jira email → Azure email when they differ</div>
+          </div>
+          <svg class="accord-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 6l4 4 4-4"/>
+          </svg>
+        </button>
+        <div class="accord-body">
+          <div class="accord-inner">
+            <div class="accord-content">
+              <table class="map-table">
+                <thead><tr><th>Jira Email</th><th>Azure Email</th><th></th></tr></thead>
+                <tbody id="assignee-tbody"></tbody>
+              </table>
+              <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="addAssigneeRow()">+ Add override</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Run Sync -->
+      <div class="accord" id="section-sync">
+        <button class="accord-hd" onclick="toggleSection('sync')">
+          <div class="accord-step accord-step--action">5</div>
+          <div class="accord-info">
+            <div class="accord-title">Run Sync</div>
+            <div class="accord-sub" id="sync-header-sub">Select a date range, preview, then run</div>
+          </div>
+          <svg class="accord-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 6l4 4 4-4"/>
+          </svg>
+        </button>
+        <div class="accord-body">
+          <div class="accord-inner">
+            <div class="accord-content">
+
+              <!-- Date Range -->
+              <div class="date-filter">
+                <div class="df-label">Date Range <span class="df-required">Required</span></div>
+                <div class="df-presets">
+                  <button class="df-btn" data-preset="today"     onclick="setPreset('today')">Today</button>
+                  <button class="df-btn" data-preset="this-week" onclick="setPreset('this-week')">This Week</button>
+                  <button class="df-btn" data-preset="last-week" onclick="setPreset('last-week')">Last Week</button>
+                  <button class="df-btn" data-preset="7d"        onclick="setPreset('7d')">Last 7 Days</button>
+                  <button class="df-btn" data-preset="30d"       onclick="setPreset('30d')">Last 30 Days</button>
+                  <button class="df-btn" data-preset="custom"    onclick="setPreset('custom')">Custom…</button>
+                </div>
+                <div id="df-custom" class="df-custom-row hidden">
+                  <div class="df-field">
+                    <label class="df-field-label">From</label>
+                    <input type="date" id="df-from" onchange="onCustomDateChange()">
+                  </div>
+                  <div class="df-field">
+                    <label class="df-field-label">To</label>
+                    <input type="date" id="df-to" onchange="onCustomDateChange()">
+                  </div>
+                  <div class="df-field">
+                    <label class="df-field-label">Filter by</label>
+                    <select id="df-field-select" onchange="updateDfSummary()">
+                      <option value="updated">Updated date</option>
+                      <option value="created">Created date</option>
+                      <option value="either">Created or Updated</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="df-summary" id="df-summary"></div>
+              </div>
+
+              <div class="btn-row sync-actions">
+                <button class="btn btn-secondary" onclick="runSync(true)">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                    <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/>
+                  </svg>
+                  Preview
+                </button>
+                <button class="btn btn-primary" onclick="confirmSync()">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.5 7A6 6 0 0 0 3 4.5M2.5 2.5v3h3"/>
+                    <path d="M2.5 9a6 6 0 0 0 10.5 2.5M13.5 13.5v-3h-3"/>
+                  </svg>
+                  Run Sync
+                </button>
+              </div>
+              <div class="spinner" id="sync-spinner"><div class="spin-ring"></div> Syncing — this may take a minute…</div>
+              <div id="sync-result" class="result hidden"></div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /scroll-area -->
+  </div><!-- /main-col -->
+</div><!-- /shell -->
+
+<script src="/static/app.js"></script>
+</body>
+</html>

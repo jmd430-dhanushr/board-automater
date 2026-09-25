@@ -1,0 +1,25 @@
+# Secrets — pass at runtime with --env-file instead
+.env
+.env.*
+!.env.example
+
+# Git / editor / local tooling
+.git
+.github
+.claude
+.vscode
+*.md
+docs/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Frontend — rebuilt inside the image
+frontend/node_modules/
+frontend/dist/
+
+# Local test scripts
+test_*.py
