@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { computeRange } from '../../utils/dates'
-import { syncApi } from '../../utils/api'
-import SyncResultPanel from '../SyncResultPanel'
+import { streamSync } from '../../utils/api'
+import SyncProgress, { initialRun, applyEvent } from '../SyncProgress'
 
 const PRESETS = [
   { id: 'today',     label: 'Today' },
@@ -26,9 +26,9 @@ function DateSummary({ from, to, field }) {
 }
 
 export default function RunSync({ jira, azure, mapping, dateFilter, setDateFilter }) {
-  const [syncing,    setSyncing]    = useState(false)
-  const [syncResult, setSyncResult] = useState(null)
-  const [error,      setError]      = useState(null)
+  const [syncing, setSyncing] = useState(false)
+  const [run,     setRun]     = useState(null)
+  const [error,   setError]   = useState(null)
 
   const { preset, from, to, field } = dateFilter
   const hasRange = !!(from || to)
@@ -49,25 +49,23 @@ export default function RunSync({ jira, azure, mapping, dateFilter, setDateFilte
     }
     setError(null)
     setSyncing(true)
-    setSyncResult(null)
+    setRun(initialRun(dryRun))
     try {
-      const res = await syncApi(dryRun, {
+      await streamSync(dryRun, {
         jira, azure, mapping,
         date_filter: { field, from_date: from || null, to_date: to || null },
-      })
-      if (res.status === 'error') {
-        setError(res.error || 'Unknown error')
-      } else {
-        setSyncResult({ res, dryRun })
-      }
+      }, ev => setRun(r => applyEvent(r, ev)))
+      setRun(r => (r.finished ? r : { ...r, finished: true, stage: 'Stopped',
+        error: 'The connection to the server closed before the sync finished. Check the results in Azure before running again.' }))
     } catch (e) {
-      setError(`Request failed: ${e.message}`)
+      setRun(null)
+      setError(e.message)
     }
     setSyncing(false)
   }
 
   function confirmSync() {
-    if (!window.confirm('Run LIVE sync? This will create/update work items in Azure DevOps.')) return
+    if (!window.confirm('Run LIVE sync? This will create and update work items in Azure DevOps.\n\nTip: run Preview first to see every change.')) return
     doSync(false)
   }
 
@@ -140,18 +138,11 @@ export default function RunSync({ jira, azure, mapping, dateFilter, setDateFilte
         </button>
       </div>
 
-      {syncing && (
-        <div className="spinner active">
-          <div className="spin-ring" />
-          Syncing — this may take a minute…
-        </div>
-      )}
-
       {error && <div className="result error">{error}</div>}
 
-      {syncResult && (
+      {run && (
         <div className="srp-host">
-          <SyncResultPanel res={syncResult.res} dryRun={syncResult.dryRun} />
+          <SyncProgress run={run} />
         </div>
       )}
     </div>

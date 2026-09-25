@@ -4,8 +4,4 @@ services:
     image: board-automater:latest
     ports:
       - "8000:8000"
-    # Optional: only needed for ASSIGNEE_EMAIL_OVERRIDES or the legacy env-based endpoints.
-    env_file:
-      - path: .env
-        required: false
     restart: unless-stopped
